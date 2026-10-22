@@ -141,4 +141,67 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         pantryCursor.close();
 
-     
+        // Fetch all recipes and test against pantry
+        Cursor recipeCursor = db.rawQuery("SELECT * FROM " + TABLE_RECIPES, null);
+        List<Integer> matchedRecipeIds = new ArrayList<>();
+
+        if (recipeCursor.moveToFirst()) {
+            do {
+                int recipeId = recipeCursor.getInt(recipeCursor.getColumnIndexOrThrow(COLUMN_ID));
+                String ingredientsRaw = recipeCursor.getString(recipeCursor.getColumnIndexOrThrow(COLUMN_RECIPE_INGREDIENTS));
+
+                String[] reqArray = ingredientsRaw.split(",");
+                boolean recipeFullyMatched = true;
+
+                for (String reqStr : reqArray) {
+                    String[] parts = reqStr.split(":");
+                    if (parts.length < 2) continue;
+                    String reqName = parts[0].trim().toLowerCase().replaceAll("s$", "");
+                    double reqQty = Double.parseDouble(parts[1]);
+
+                    boolean foundInPantry = false;
+                    for (PantryModel item : pantryList) {
+                        if (item.name.equals(reqName) && item.quantity >= reqQty) {
+                            foundInPantry = true;
+                            break;
+                        }
+                    }
+
+                    if (!foundInPantry) {
+                        recipeFullyMatched = false;
+                        break; // Exclude recipe strictly if even 1 ingredient is missing/insufficient
+                    }
+                }
+
+                if (recipeFullyMatched && reqArray.length > 0) {
+                    matchedRecipeIds.add(recipeId);
+                }
+            } while (recipeCursor.moveToNext());
+        }
+        recipeCursor.close();
+
+        if (matchedRecipeIds.isEmpty()) {
+            return null; // Signals zero matching recipes
+        }
+
+        // Return cursor with matching recipes
+        StringBuilder idsString = new StringBuilder();
+        for (int i = 0; i < matchedRecipeIds.size(); i++) {
+            idsString.append(matchedRecipeIds.get(i));
+            if (i < matchedRecipeIds.size() - 1) idsString.append(",");
+        }
+
+        return db.rawQuery("SELECT * FROM " + TABLE_RECIPES + " WHERE " + COLUMN_ID + " IN (" + idsString.toString() + ")", null);
+    }
+
+    // Simple inner helper model
+    private static class PantryModel {
+        String name;
+        double quantity;
+        PantryModel(String name, double quantity) {
+            this.name = name;
+            this.quantity = quantity;
+        }
+    }
+}
+
