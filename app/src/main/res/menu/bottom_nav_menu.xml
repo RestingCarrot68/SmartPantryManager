@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/nav_home"
+        android:title="Home" />
+    <item
         android:id="@+id/nav_pantry"
         android:title="My Pantry" />
     <item
         android:id="@+id/nav_suggestions"
-        android:title="Suggested Recipes" />
-    <item
-        android:id="@+id/nav_settings"
-        android:title="Settings" />
+        android:title="Recipes" />
 </menu>

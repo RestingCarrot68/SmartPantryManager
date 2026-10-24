@@ -3,7 +3,6 @@ package com.example.smartpantrymanager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +13,7 @@ public class PantryActivity extends AppCompatActivity {
 
     DatabaseHelper db;
     RecyclerView recyclerView;
-    Button btnAdd;
+    Button btnAdd, btnSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +23,16 @@ public class PantryActivity extends AppCompatActivity {
         db = new DatabaseHelper(this);
         recyclerView = findViewById(R.id.recyclerViewPantry);
         btnAdd = findViewById(R.id.btnAddIngredient);
+        btnSettings = findViewById(R.id.btnOpenSettings);
 
         btnAdd.setOnClickListener(v -> {
             Intent intent = new Intent(PantryActivity.this, AddEditIngredientActivity.class);
+            startActivity(intent);
+        });
+
+        // Open Settings screen when Settings button in Pantry header is clicked
+        btnSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(PantryActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
 
@@ -40,12 +46,11 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void loadPantryData() {
-        Cursor cursor = db.getAllPantryItems();
+        Cursor cursor = db.getAllInventoryItems();
         if (cursor == null || cursor.getCount() == 0) {
             Toast.makeText(this, "Pantry is empty", Toast.LENGTH_SHORT).show();
             return;
         }
-        // Custom Adapter binds cursor data to RecyclerView
         PantryAdapter adapter = new PantryAdapter(this, cursor, db);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);

@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AddEditIngredientActivity extends AppCompatActivity {
 
-    EditText etName, etQty, etUnit, etExpiry;
+    EditText etName, etCategory, etQty, etUnit, etExpiry;
     Button btnSave;
     DatabaseHelper db;
     int editId = -1;
@@ -21,6 +21,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
 
         db = new DatabaseHelper(this);
         etName = findViewById(R.id.etName);
+        etCategory = findViewById(R.id.etCategory);
         etQty = findViewById(R.id.etQuantity);
         etUnit = findViewById(R.id.etUnit);
         etExpiry = findViewById(R.id.etExpiry);
@@ -29,6 +30,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         if (getIntent().hasExtra("ID")) {
             editId = getIntent().getIntExtra("ID", -1);
             etName.setText(getIntent().getStringExtra("NAME"));
+            etCategory.setText(getIntent().getStringExtra("CATEGORY"));
             etQty.setText(String.valueOf(getIntent().getDoubleExtra("QTY", 0)));
             etUnit.setText(getIntent().getStringExtra("UNIT"));
             etExpiry.setText(getIntent().getStringExtra("EXPIRY"));
@@ -39,13 +41,13 @@ public class AddEditIngredientActivity extends AppCompatActivity {
 
     private void saveItem() {
         String name = etName.getText().toString().trim();
+        String category = etCategory.getText().toString().trim();
         String qtyStr = etQty.getText().toString().trim();
         String unit = etUnit.getText().toString().trim();
         String expiry = etExpiry.getText().toString().trim();
 
-        // Strict Form Input Validation
         if (TextUtils.isEmpty(name)) {
-            etName.setError("Ingredient name is required");
+            etName.setError("Item name is required");
             return;
         }
         if (TextUtils.isEmpty(qtyStr)) {
@@ -66,11 +68,11 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         }
 
         if (editId == -1) {
-            db.addPantryItem(name, qty, unit, expiry);
-            Toast.makeText(this, "Ingredient Added", Toast.LENGTH_SHORT).show();
+            db.addInventoryItem(name, category, qty, unit, expiry);
+            Toast.makeText(this, "Item Saved to Inventory", Toast.LENGTH_SHORT).show();
         } else {
-            db.updatePantryItem(editId, name, qty, unit, expiry);
-            Toast.makeText(this, "Ingredient Updated", Toast.LENGTH_SHORT).show();
+            db.updateInventoryItem(editId, name, category, qty, unit, expiry);
+            Toast.makeText(this, "Item Updated", Toast.LENGTH_SHORT).show();
         }
 
         finish();

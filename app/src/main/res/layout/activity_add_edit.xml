@@ -9,7 +9,13 @@
         android:id="@+id/etName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Ingredient Name" />
+        android:hint="Ingredient Name (e.g. Milk)" />
+
+    <EditText
+        android:id="@+id/etCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Category (e.g. Dairy, Produce, Bakery)" />
 
     <EditText
         android:id="@+id/etQuantity"
@@ -22,19 +28,19 @@
         android:id="@+id/etUnit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Unit (e.g., pcs, g, cups)" />
+        android:hint="Unit (e.g. pcs, cups, g)" />
 
     <EditText
         android:id="@+id/etExpiry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Expiry Date (e.g., YYYY-MM-DD)" />
+        android:hint="Expiry Date (e.g. YYYY-MM-DD)" />
 
     <Button
         android:id="@+id/btnSave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Save Ingredient" />
+        android:text="Save Item" />
 
 </LinearLayout>
