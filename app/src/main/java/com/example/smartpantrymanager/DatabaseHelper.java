@@ -6,31 +6,24 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "SmartPantry.db";
+    private static final String DATABASE_NAME = "SmartInventory.db";
     private static final int DATABASE_VERSION = 1;
 
-    // Table Names
-    public static final String TABLE_PANTRY = "pantry";
-    public static final String TABLE_RECIPES = "recipes";
+    public static final String TABLE_INVENTORY = "inventory";
+    public static final String TABLE_MEALS = "meals";
 
-    // Common Columns
     public static final String COLUMN_ID = "id";
+    public static final String COLUMN_ITEM_NAME = "item_name";
+    public static final String COLUMN_CATEGORY = "category";
+    public static final String COLUMN_QUANTITY = "quantity";
+    public static final String COLUMN_UNIT = "unit";
+    public static final String COLUMN_EXPIRY_DATE = "expiry_date";
 
-    // Pantry Columns
-    public static final String COLUMN_PANTRY_NAME = "name";
-    public static final String COLUMN_PANTRY_QTY = "quantity";
-    public static final String COLUMN_PANTRY_UNIT = "unit";
-    public static final String COLUMN_PANTRY_EXPIRY = "expiry_date";
-
-    // Recipe Columns
-    public static final String COLUMN_RECIPE_TITLE = "title";
-    public static final String COLUMN_RECIPE_INGREDIENTS = "ingredients"; // Formatted: name:qty:unit,name:qty:unit
-    public static final String COLUMN_RECIPE_INSTRUCTIONS = "instructions";
+    public static final String COLUMN_MEAL_TITLE = "title";
+    public static final String COLUMN_INGREDIENTS = "ingredients";
+    public static final String COLUMN_STEPS = "steps";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -38,120 +31,106 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_PANTRY_TABLE = "CREATE TABLE " + TABLE_PANTRY + " ("
+        String CREATE_INVENTORY_TABLE = "CREATE TABLE " + TABLE_INVENTORY + " ("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COLUMN_PANTRY_NAME + " TEXT, "
-                + COLUMN_PANTRY_QTY + " REAL, "
-                + COLUMN_PANTRY_UNIT + " TEXT, "
-                + COLUMN_PANTRY_EXPIRY + " TEXT)";
+                + COLUMN_ITEM_NAME + " TEXT, "
+                + COLUMN_CATEGORY + " TEXT, "
+                + COLUMN_QUANTITY + " REAL, "
+                + COLUMN_UNIT + " TEXT, "
+                + COLUMN_EXPIRY_DATE + " TEXT)";
 
-        String CREATE_RECIPES_TABLE = "CREATE TABLE " + TABLE_RECIPES + " ("
+        String CREATE_MEALS_TABLE = "CREATE TABLE " + TABLE_MEALS + " ("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COLUMN_RECIPE_TITLE + " TEXT, "
-                + COLUMN_RECIPE_INGREDIENTS + " TEXT, "
-                + COLUMN_RECIPE_INSTRUCTIONS + " TEXT)";
+                + COLUMN_MEAL_TITLE + " TEXT, "
+                + COLUMN_INGREDIENTS + " TEXT, "
+                + COLUMN_STEPS + " TEXT)";
 
-        db.execSQL(CREATE_PANTRY_TABLE);
-        db.execSQL(CREATE_RECIPES_TABLE);
+        db.execSQL(CREATE_INVENTORY_TABLE);
+        db.execSQL(CREATE_MEALS_TABLE);
 
-        seedRecipes(db);
+        seedMeals(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PANTRY);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECIPES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MEALS);
         onCreate(db);
     }
 
-    // Seed 15-20 Initial Recipes
-    private void seedRecipes(SQLiteDatabase db) {
-        insertRecipeSeed(db, "Simple Omelette", "egg:2:pcs,salt:1:pinch,butter:1:tbsp", "Whisk eggs. Melt butter in pan. Cook until set.");
-        insertRecipeSeed(db, "Tomato Pasta", "pasta:200:g,tomato:2:pcs,garlic:1:clove,olive oil:1:tbsp", "Boil pasta. Fry garlic and tomatoes in oil. Mix together.");
-        insertRecipeSeed(db, "Scrambled Eggs", "egg:3:pcs,butter:1:tbsp", "Melt butter, scramble eggs over medium heat.");
-        insertRecipeSeed(db, "Garlic Rice", "rice:1:cup,garlic:2:clove,butter:1:tbsp", "Cook garlic in butter. Add boiled rice and stir.");
-        insertRecipeSeed(db, "Boiled Eggs", "egg:2:pcs,water:2:cups", "Boil water. Cook eggs for 8 minutes.");
-        insertRecipeSeed(db, "Butter Toast", "bread:2:slices,butter:1:tbsp", "Toast bread and spread butter evenly.");
-        insertRecipeSeed(db, "Pancakes", "flour:1:cup,milk:1:cup,egg:1:pcs,butter:1:tbsp", "Mix ingredients into batter. Pour on hot pan and flip.");
-        insertRecipeSeed(db, "Grilled Cheese", "bread:2:slices,cheese:1:slice,butter:1:tbsp", "Butter bread outside, place cheese inside, grill until golden.");
-        insertRecipeSeed(db, "French Toast", "bread:2:slices,egg:1:pcs,milk:0.5:cup,butter:1:tbsp", "Dip bread in beaten egg and milk. Fry in butter.");
-        insertRecipeSeed(db, "Mashed Potatoes", "potato:3:pcs,butter:2:tbsp,milk:0.25:cup", "Boil potatoes until soft. Mash with butter and milk.");
-        insertRecipeSeed(db, "Potato Fries", "potato:2:pcs,oil:2:tbsp,salt:1:pinch", "Cut potatoes into strips. Deep fry in oil and season with salt.");
-        insertRecipeSeed(db, "Garlic Butter Pasta", "pasta:150:g,garlic:2:clove,butter:2:tbsp", "Boil pasta. Sauté garlic in butter, pour over pasta.");
-        insertRecipeSeed(db, "Warm Milk Drink", "milk:1:cup,sugar:1:tsp", "Heat milk in a saucepan and stir in sugar.");
-        insertRecipeSeed(db, "Cheesy Scrambled Eggs", "egg:2:pcs,cheese:1:slice,butter:1:tbsp", "Melt butter, add eggs and cheese slice while scrambling.");
-        insertRecipeSeed(db, "Tomato Salad", "tomato:3:pcs,olive oil:1:tbsp,salt:1:pinch", "Slice tomatoes, drizzle olive oil, and sprinkle salt.");
+    private void seedMeals(SQLiteDatabase db) {
+        insertMealSeed(db, "Avocado Toast", "bread:2:slices,avocado:1:pcs,salt:1:pinch", "Toast bread. Mash avocado with salt and spread on top.");
+        insertMealSeed(db, "Classic Pancakes", "flour:1:cup,milk:1:cup,egg:1:pcs,sugar:1:tbsp", "Mix batter. Pour onto hot oiled skillet and flip when bubbling.");
+        insertMealSeed(db, "Garlic Butter Rice", "rice:1:cup,garlic:2:clove,butter:1:tbsp", "Sauté chopped garlic in butter. Mix in cooked rice.");
+        insertMealSeed(db, "Creamy Oats", "oats:1:cup,milk:2:cups,honey:1:tbsp", "Simmer oats in milk. Stir in honey before serving.");
+        insertMealSeed(db, "Cheese Omelette", "egg:2:pcs,cheese:1:slice,butter:1:tbsp", "Whisk eggs. Melt butter, cook eggs, fold cheese inside.");
     }
 
-    private void insertRecipeSeed(SQLiteDatabase db, String title, String ingredients, String instructions) {
+    private void insertMealSeed(SQLiteDatabase db, String title, String ingredients, String steps) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_RECIPE_TITLE, title);
-        cv.put(COLUMN_RECIPE_INGREDIENTS, ingredients);
-        cv.put(COLUMN_RECIPE_INSTRUCTIONS, instructions);
-        db.insert(TABLE_RECIPES, null, cv);
+        cv.put(COLUMN_MEAL_TITLE, title);
+        cv.put(COLUMN_INGREDIENTS, ingredients);
+        cv.put(COLUMN_STEPS, steps);
+        db.insert(TABLE_MEALS, null, cv);
     }
 
-    // CRUD Operations for Pantry
-    public boolean addPantryItem(String name, double qty, String unit, String expiry) {
+    public boolean addInventoryItem(String name, String category, double qty, String unit, String expiry) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_PANTRY_NAME, name);
-        cv.put(COLUMN_PANTRY_QTY, qty);
-        cv.put(COLUMN_PANTRY_UNIT, unit);
-        cv.put(COLUMN_PANTRY_EXPIRY, expiry);
-        long result = db.insert(TABLE_PANTRY, null, cv);
+        cv.put(COLUMN_ITEM_NAME, name);
+        cv.put(COLUMN_CATEGORY, category);
+        cv.put(COLUMN_QUANTITY, qty);
+        cv.put(COLUMN_UNIT, unit);
+        cv.put(COLUMN_EXPIRY_DATE, expiry);
+        long result = db.insert(TABLE_INVENTORY, null, cv);
         return result != -1;
     }
 
-    public boolean updatePantryItem(int id, String name, double qty, String unit, String expiry) {
+    public boolean updateInventoryItem(int id, String name, String category, double qty, String unit, String expiry) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_PANTRY_NAME, name);
-        cv.put(COLUMN_PANTRY_QTY, qty);
-        cv.put(COLUMN_PANTRY_UNIT, unit);
-        cv.put(COLUMN_PANTRY_EXPIRY, expiry);
-        int result = db.update(TABLE_PANTRY, cv, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
+        cv.put(COLUMN_ITEM_NAME, name);
+        cv.put(COLUMN_CATEGORY, category);
+        cv.put(COLUMN_QUANTITY, qty);
+        cv.put(COLUMN_UNIT, unit);
+        cv.put(COLUMN_EXPIRY_DATE, expiry);
+        int result = db.update(TABLE_INVENTORY, cv, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
         return result > 0;
     }
 
-    public boolean deletePantryItem(int id) {
+    public boolean deleteInventoryItem(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        int result = db.delete(TABLE_PANTRY, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
-        return result > 0;
+        return db.delete(TABLE_INVENTORY, COLUMN_ID + "=?", new String[]{String.valueOf(id)}) > 0;
     }
 
-    public Cursor getAllPantryItems() {
+    public Cursor getAllInventoryItems() {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM " + TABLE_PANTRY, null);
+        return db.rawQuery("SELECT * FROM " + TABLE_INVENTORY, null);
     }
 
-    // STRICT MATCHING ALGORITHM LOGIC
-    public Cursor getSuggestedRecipes() {
+    public Cursor getMatchingMeals() {
         SQLiteDatabase db = this.getReadableDatabase();
-
-        // Fetch all pantry items into a structure
-        Cursor pantryCursor = db.rawQuery("SELECT * FROM " + TABLE_PANTRY, null);
-        List<PantryModel> pantryList = new ArrayList<>();
-        if (pantryCursor.moveToFirst()) {
+        Cursor inventoryCursor = db.rawQuery("SELECT * FROM " + TABLE_INVENTORY, null);
+        java.util.List<InventoryModel> inventoryList = new java.util.ArrayList<>();
+        if (inventoryCursor.moveToFirst()) {
             do {
-                String name = pantryCursor.getString(pantryCursor.getColumnIndexOrThrow(COLUMN_PANTRY_NAME)).trim().toLowerCase().replaceAll("s$", "");
-                double qty = pantryCursor.getDouble(pantryCursor.getColumnIndexOrThrow(COLUMN_PANTRY_QTY));
-                pantryList.add(new PantryModel(name, qty));
-            } while (pantryCursor.moveToNext());
+                String name = inventoryCursor.getString(inventoryCursor.getColumnIndexOrThrow(COLUMN_ITEM_NAME)).trim().toLowerCase().replaceAll("s$", "");
+                double qty = inventoryCursor.getDouble(inventoryCursor.getColumnIndexOrThrow(COLUMN_QUANTITY));
+                inventoryList.add(new InventoryModel(name, qty));
+            } while (inventoryCursor.moveToNext());
         }
-        pantryCursor.close();
+        inventoryCursor.close();
 
-        // Fetch all recipes and test against pantry
-        Cursor recipeCursor = db.rawQuery("SELECT * FROM " + TABLE_RECIPES, null);
-        List<Integer> matchedRecipeIds = new ArrayList<>();
+        Cursor mealCursor = db.rawQuery("SELECT * FROM " + TABLE_MEALS, null);
+        java.util.List<Integer> matchedMealIds = new java.util.ArrayList<>();
 
-        if (recipeCursor.moveToFirst()) {
+        if (mealCursor.moveToFirst()) {
             do {
-                int recipeId = recipeCursor.getInt(recipeCursor.getColumnIndexOrThrow(COLUMN_ID));
-                String ingredientsRaw = recipeCursor.getString(recipeCursor.getColumnIndexOrThrow(COLUMN_RECIPE_INGREDIENTS));
+                int mealId = mealCursor.getInt(mealCursor.getColumnIndexOrThrow(COLUMN_ID));
+                String ingredientsRaw = mealCursor.getString(mealCursor.getColumnIndexOrThrow(COLUMN_INGREDIENTS));
 
                 String[] reqArray = ingredientsRaw.split(",");
-                boolean recipeFullyMatched = true;
+                boolean mealFullyMatched = true;
 
                 for (String reqStr : reqArray) {
                     String[] parts = reqStr.split(":");
@@ -159,49 +138,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String reqName = parts[0].trim().toLowerCase().replaceAll("s$", "");
                     double reqQty = Double.parseDouble(parts[1]);
 
-                    boolean foundInPantry = false;
-                    for (PantryModel item : pantryList) {
+                    boolean foundInInventory = false;
+                    for (InventoryModel item : inventoryList) {
                         if (item.name.equals(reqName) && item.quantity >= reqQty) {
-                            foundInPantry = true;
+                            foundInInventory = true;
                             break;
                         }
                     }
 
-                    if (!foundInPantry) {
-                        recipeFullyMatched = false;
-                        break; // Exclude recipe strictly if even 1 ingredient is missing/insufficient
+                    if (!foundInInventory) {
+                        mealFullyMatched = false;
+                        break;
                     }
                 }
 
-                if (recipeFullyMatched && reqArray.length > 0) {
-                    matchedRecipeIds.add(recipeId);
+                if (mealFullyMatched && reqArray.length > 0) {
+                    matchedMealIds.add(mealId);
                 }
-            } while (recipeCursor.moveToNext());
+            } while (mealCursor.moveToNext());
         }
-        recipeCursor.close();
+        mealCursor.close();
 
-        if (matchedRecipeIds.isEmpty()) {
-            return null; // Signals zero matching recipes
-        }
+        if (matchedMealIds.isEmpty()) return null;
 
-        // Return cursor with matching recipes
         StringBuilder idsString = new StringBuilder();
-        for (int i = 0; i < matchedRecipeIds.size(); i++) {
-            idsString.append(matchedRecipeIds.get(i));
-            if (i < matchedRecipeIds.size() - 1) idsString.append(",");
+        for (int i = 0; i < matchedMealIds.size(); i++) {
+            idsString.append(matchedMealIds.get(i));
+            if (i < matchedMealIds.size() - 1) idsString.append(",");
         }
 
-        return db.rawQuery("SELECT * FROM " + TABLE_RECIPES + " WHERE " + COLUMN_ID + " IN (" + idsString.toString() + ")", null);
+        return db.rawQuery("SELECT * FROM " + TABLE_MEALS + " WHERE " + COLUMN_ID + " IN (" + idsString.toString() + ")", null);
     }
 
-    // Simple inner helper model
-    private static class PantryModel {
-        String name;
-        double quantity;
-        PantryModel(String name, double quantity) {
+    public static class InventoryModel {
+        public String name;
+        public double quantity;
+        public InventoryModel(String name, double quantity) {
             this.name = name;
             this.quantity = quantity;
         }
     }
 }
-
